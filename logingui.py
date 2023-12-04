@@ -141,6 +141,7 @@ def loggedin(username, password, key,
   #stop
   with open(filename, 'w') as f:
     f.write(f'New Log File @{username}!')
+    print("filename")
 
   def forward():
     current_time = datetime.datetime.now()
@@ -268,7 +269,7 @@ def loggedin(username, password, key,
       command=lambda: [send_command('stop'), stop()])
   logout_button = tk.Button(bottom_right_frame,
                             text="   Logout   ",
-                            command=logout)
+                            command=lambda: [send_command('stop'), logout()])
 
   forward_button.grid(row=0, column=1)
   backward_button.grid(row=2, column=1)
