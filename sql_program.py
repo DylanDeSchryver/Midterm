@@ -36,7 +36,7 @@ def save_sql():
                passw=hashlib.sha256(user_info[
                                         'password'].encode()).hexdigest()))  # encrypt password using hashlib sha256 and base64 libraries
 
-    crsr.execute("SELECT * FROM user")
+    crsr.execute("SELECT * FROM user") #this is to print the entire database in the console.
 
     ans = crsr.fetchall()
 
@@ -62,11 +62,11 @@ def get_sql(username, password):
     connection.close()
 
 
-def first(username, password):
+def first(username, password): #this function uses the successful passed username and password (meaning and account does exist) from the login function to get the first name.
     connection = sqlite3.connect("USER.db")  # connect to database and table
     crsr = connection.cursor()
 
-    crsr.execute("SELECT fname FROM user WHERE user = '{user}' AND pass = '{passw}'".format(user=username,
+    crsr.execute("SELECT fname FROM user WHERE user = '{user}' AND pass = '{passw}'".format(user=username, #getting first name
                                                                                             passw=hashlib.sha256(
                                                                                                 password.encode()).hexdigest()))
 
@@ -74,7 +74,7 @@ def first(username, password):
 
     ansl = list(ans)
 
-    def tuptostr(tup):
+    def tuptostr(tup): #the rest is formatting to make it easier to use the first name.
         global ansl
         # initialize an empty string
         empty = ''
