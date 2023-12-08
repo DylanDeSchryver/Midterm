@@ -33,11 +33,11 @@ def window():
   root.configure(bg="#ffffff")
   label2 = Label(root, text="Login or create an account.")
   label2.pack()
-  add_button = Button(root, text='Create an Account', command=create)
+  add_button = Button(root, text='Create an Account', command=create) #calls create function to create an account
   add_button.pack()
-  login_button = Button(root, text='Login', command=login)
+  login_button = Button(root, text='Login', command=login) #calls login function to login to an account
   login_button.pack()
-  button = Button(root, text='Save and Exit', command=root.destroy)
+  button = Button(root, text='Save and Exit', command=root.destroy) #destroys window
   button.pack()
   root.mainloop()
 
@@ -66,15 +66,15 @@ def create():
 
   passw = Label(root, text="Password: ")
   passw.pack()
-  passw_entry = Entry(root, show='*')
+  passw_entry = Entry(root, show='*') #hides password with *
   passw_entry.pack()
 
   def save_info():
     # Save user information to global variables, then run save_sql(), which has access to the dictionary.
-    user_info['name'] = name_entry.get()
-    user_info['last_name'] = last_entry.get()
-    user_info['username'] = user_entry.get()
-    user_info['password'] = passw_entry.get()
+    user_info['name'] = name_entry.get() #gets first name
+    user_info['last_name'] = last_entry.get() #gets last name
+    user_info['username'] = user_entry.get() #gets username
+    user_info['password'] = passw_entry.get() #gets passw
     save_sql()  # run save_sql
     root.destroy()  # close window
 
@@ -101,22 +101,22 @@ def login():  # make login window with entry fields and buttons
   passw_entry.pack()
 
   def check_login():  # check if the user name and passwords work.
-    username = user_entry.get()
-    password = passw_entry.get()
-    key = get_sql(username, password)
-    if key != []:
+    username = user_entry.get() #gets username
+    password = passw_entry.get() #gets password
+    key = get_sql(username, password) #runs get_sql with var username and password
+    if key != []: #when running get_sql, if a username and password are found, matching the username and password passed to the get_sql function, key will be a list with the username and password, meaning the person does have an account, and can login.
       pass
     else:
       messagebox.showerror('Error', "Incorrect Username or Password.")
       root.destroy()
 
-    name = first(username, password)
+    name = first(username, password) #gets first name corresponding to the successful username and password
 
     # key will be the key which corresponds to the user and password in db, and the user and password entered in the login.
 
-    if key != []:  # if the key does exist, open menu
+    if key != []:  # if the key does exist, open menu. this check is redundant, however it makes the code easier to read.
       root.destroy()
-      loggedin(username, password, key, name)
+      loggedin(username, password, key, name) 
 
     else:  # else preswnt error and destory window
       messagebox.showerror('Error', "Incorrect Username or Password.")
@@ -128,67 +128,67 @@ def login():  # make login window with entry fields and buttons
 
 def loggedin(username, password, key,
              name):  # currently do not need password, but maybe in future
-  current_time = datetime.datetime.now()
-  today = current_time.strftime("%x")
+  current_time = datetime.datetime.now() #gets current time
+  today = current_time.strftime("%x") #gets current day
   today_time = current_time.strftime("%X")
   filename = username + ' ' + today + ' ' + today_time + '.txt'
-  today = today.replace('/', '-')
+  today = today.replace('/', '-') #replaces slashes with dashes because there was an error with the filename having a slash
   # Get the directory of the current script
   script_directory = os.path.dirname(__file__)
 
   # Construct the full path to the log file
   filename = f"{script_directory}/{username} {today} {today_time}.txt"
-  #stop
+  
   with open(filename, 'w') as f:
-    f.write(f'New Log File @{username}!')
+    f.write(f'New Log File @{username}!') #create the new log file
     print("filename")
 
-  def forward():
+  def forward(): #called when pressing the forward button. Collects new day and time information, however re uses the old 'filename' variable to edit the log file. 
     current_time = datetime.datetime.now()
     log_message("Move Forward")
     today = current_time.strftime("%x")
     today_time = current_time.strftime("%X")
     today = today.replace('/', '-')
-    with open(filename, 'at') as f:
+    with open(filename, 'at') as f: #opened for appending text
       f.write(f'\n{username}/Move Forward {today} {today_time}')
 
-  def backward():
+  def backward(): #called when pressing the backward button. Collects new day and time information, however re uses the old 'filename' variable to edit the log file. 
     current_time = datetime.datetime.now()
     log_message("Move Backward")
     today = current_time.strftime("%x")
     today_time = current_time.strftime("%X")
     today = today.replace('/', '-')
-    with open(filename, 'at') as f:
+    with open(filename, 'at') as f:  #opened for appending text
       f.write(f'\n{username}/Move Backward {today} {today_time}')
 
-  def left():
+  def left(): #called when pressing the left button. Collects new day and time information, however re uses the old 'filename' variable to edit the log file. 
     current_time = datetime.datetime.now()
     log_message("Turn Left")
     today = current_time.strftime("%x")
     today_time = current_time.strftime("%X")
     today = today.replace('/', '-')
-    with open(filename, 'at') as f:
+    with open(filename, 'at') as f:  #opened for appending text
       f.write(f'\n{username}/Turn Left {today} {today_time}')
 
-  def right():
+  def right(): #called when pressing the right button. Collects new day and time information, however re uses the old 'filename' variable to edit the log file. 
     current_time = datetime.datetime.now()
     log_message("Turn Right")
     today = current_time.strftime("%x")
     today_time = current_time.strftime("%X")
     today = today.replace('/', '-')
-    with open(filename, 'at') as f:
+    with open(filename, 'at') as f:  #opened for appending text
       f.write(f'\n{username}/Turn Right {today} {today_time}')
 
-  def stop():
+  def stop(): #called when pressing the stop button. Collects new day and time information, however re uses the old 'filename' variable to edit the log file. 
     current_time = datetime.datetime.now()
     log_message("Stop")
     today = current_time.strftime("%x")
     today_time = current_time.strftime("%X")
     today = today.replace('/', '-')
-    with open(filename, 'at') as f:
+    with open(filename, 'at') as f:  #opened for appending text
       f.write(f'\n{username}/Stop {today} {today_time}')
 
-  def logout():
+  def logout(): #called when pressing the logout button. Collects new day and time information, however re uses the old 'filename' variable to edit the log file. 
     current_time = datetime.datetime.now()
     log_message("Logged Out")
     root.destroy()
@@ -196,15 +196,15 @@ def loggedin(username, password, key,
     today = current_time.strftime("%x")
     today_time = current_time.strftime("%X")
     today = today.replace('/', '-')
-    with open(filename, 'at') as f:
+    with open(filename, 'at') as f:  #opened for appending text
       f.write(f'\n{username}/Logout {today} {today_time}')
 
   def log_message(message):
     current_text = log_label.cget(
         "text"
-    )  # cget just gets the current values of the widget, similar to +=1
-    new_text = f"{message}\n{current_text}"
-    log_label.config(text=new_text)
+    )  # cget just gets the current values of the widget (log quadrant), similar to +=1
+    new_text = f"{message}\n{current_text}" #combines new movement log with previous logs
+    log_label.config(text=new_text) #inserts the new log with new movement log
 
   # Create the main window
   root = tk.Tk()
@@ -245,27 +245,27 @@ def loggedin(username, password, key,
 
   forward_button = tk.Button(
       bottom_right_frame,
-      text="   ^   \nForward",
+      text="   ^   ",
       # We use lamdba for the following, to send for eg. 'forward' back to the previous function send_command, we wouldnt be able to just do command = send_command('forward'), we need lambda.
       command=lambda: [send_command('forward'),
                        forward()])
   backward_button = tk.Button(
       bottom_right_frame,
-      text="Backward\n   v   ",
+      text="   v   ",
       command=lambda: [send_command('backward'),
                        backward()])
   left_button = tk.Button(
       bottom_right_frame,
-      text="<   Left",
+      text="<   ",
       command=lambda: [send_command('left'), left()])
   right_button = tk.Button(
       bottom_right_frame,
-      text="Right   >",
+      text="   >",
       command=lambda: [send_command('right'), right()
                        ])  # place move buttons, and call their functions
   stop_button = tk.Button(
       bottom_right_frame,
-      text="   Stop   ",
+      text="   U+1F7E5   ",
       command=lambda: [send_command('stop'), stop()])
   logout_button = tk.Button(bottom_right_frame,
                             text="   Logout   ",
