@@ -1,10 +1,14 @@
 import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
+from PIL import Image, ImageTk  # Import the necessary Pillow modules
+from io import BytesIO
 from sql_program import *
-import requests  # pip install requests
+import requests
 import datetime
 import os
+
+global_photo = None
 
 
 def send_command(direction):  #eg. 'forward'
@@ -141,7 +145,6 @@ def loggedin(username, password, key,
   #stop
   with open(filename, 'w') as f:
     f.write(f'New Log File @{username}!')
-    print("filename")
 
   def forward():
     current_time = datetime.datetime.now()
@@ -188,6 +191,15 @@ def loggedin(username, password, key,
     with open(filename, 'at') as f:
       f.write(f'\n{username}/Stop {today} {today_time}')
 
+  def play():
+    current_time = datetime.datetime.now()
+    log_message("Play")
+    today = current_time.strftime("%x")
+    today_time = current_time.strftime("%X")
+    today = today.replace('/', '-')
+    with open(filename, 'at') as f:
+      f.write(f'\n{username}/Play {today} {today_time}')
+
   def logout():
     current_time = datetime.datetime.now()
     log_message("Logged Out")
@@ -219,19 +231,38 @@ def loggedin(username, password, key,
                                borderwidth=2,
                                width=400,
                                height=300,
-                               bg='pink')  # just makes empty frame look nice
+                               bg='pink')
   bottom_right_frame = tk.Frame(root, width=400, height=300)
 
   top_left_frame.grid(row=0, column=0, sticky="nsew")
   top_right_frame.grid(row=0, column=1, sticky="nsew")
-  bottom_left_frame.grid(
-      row=1, column=0,
-      sticky="nsew")  # nsew just fills in all extra space within each frame
+  bottom_left_frame.grid(row=1, column=0, sticky="nsew")
   bottom_right_frame.grid(row=1, column=1, sticky="nsew")
 
   # Place labels and buttons in the frames
   camera_label = tk.Label(top_left_frame, text="CAMERA")
   camera_label.pack()
+
+  # Function to update the camera feed
+  def update_camera_feed():
+    global global_photo
+    response = requests.get('http://192.168.1.28:4200/camera', stream=True)
+    if response.status_code == 200:
+      # Open the image using PIL
+      image = Image.open(BytesIO(response.content))
+      # Resize the image to fit the label
+      image = image.resize((400, 300), resample=Image.LANCZOS)
+      # Convert the image to PhotoImage format
+      new_photo = ImageTk.PhotoImage(image)
+      # Update the label with the new image
+      camera_label.configure(image=new_photo)
+      # Update the global variable to keep a reference
+      global_photo = new_photo
+      # Schedule the function to be called after 100 milliseconds (adjust as needed)
+      root.after(100, update_camera_feed)
+
+  # Call the function to start updating the camera feed
+  update_camera_feed()
 
   log_label = tk.Label(top_right_frame,
                        text=f"Welcome {name}",
@@ -244,38 +275,43 @@ def loggedin(username, password, key,
   button_frame.pack(side="bottom", fill="both", expand=True)
 
   forward_button = tk.Button(
-      bottom_right_frame,
-      text="   ^   \nForward",
-      # We use lamdba for the following, to send for eg. 'forward' back to the previous function send_command, we wouldnt be able to just do command = send_command('forward'), we need lambda.
-      command=lambda: [send_command('forward'),
-                       forward()])
+    bottom_right_frame,
+    text="   ^   ",
+    # We use lamdba for the following, to send for eg. 'forward' back to the previous function send_command, we wouldnt be able to just do command = send_command('forward'), we need lambda.
+    command=lambda: [send_command('forward'),
+                     forward()])
   backward_button = tk.Button(
-      bottom_right_frame,
-      text="Backward\n   v   ",
-      command=lambda: [send_command('backward'),
-                       backward()])
+    bottom_right_frame,
+    text="   v   ",
+    command=lambda: [send_command('backward'),
+                     backward()])
   left_button = tk.Button(
-      bottom_right_frame,
-      text="<   Left",
-      command=lambda: [send_command('left'), left()])
+    bottom_right_frame,
+    text="<   ",
+    command=lambda: [send_command('left'), left()])
   right_button = tk.Button(
-      bottom_right_frame,
-      text="Right   >",
-      command=lambda: [send_command('right'), right()
-                       ])  # place move buttons, and call their functions
+    bottom_right_frame,
+    text="   >",
+    command=lambda: [send_command('right'), right()
+                     ])  # place move buttons, and call their functions
   stop_button = tk.Button(
-      bottom_right_frame,
-      text="   Stop   ",
-      command=lambda: [send_command('stop'), stop()])
+    bottom_right_frame,
+    text=u"   \u25A1   ",
+    command=lambda: [send_command('stop'), stop()])
+  play_button = tk.Button(
+    bottom_right_frame,
+    text=u"   \u25B6   ",
+    command=lambda: [send_command('play'), play()])
   logout_button = tk.Button(bottom_right_frame,
                             text="   Logout   ",
-                            command=lambda: [send_command('stop'), logout()])
+                            command=logout)
 
   forward_button.grid(row=0, column=1)
   backward_button.grid(row=2, column=1)
   left_button.grid(row=1, column=0)
   right_button.grid(row=1, column=2)
   stop_button.grid(row=1, column=1)
+  play_button.grid(row=2,column=3)
   logout_button.grid(row=2, column=2)
 
   root.grid_rowconfigure(0, weight=1)
