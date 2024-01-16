@@ -8,8 +8,8 @@ import os
 
 
 def send_command(direction):  #eg. 'forward'
-  ip = '192.168.1.28'  # uses ip address of raspberry pi
-  url = f'http://192.168.1.28:4200/move'
+  ip = '192.168.1.30'  # uses ip address of raspberry pi
+  url = f'http://192.168.1.30:4200/move'
   data = {
       'direction': direction
   }  # creates dictionary which stores the direction the tank should move in
@@ -26,23 +26,24 @@ user_info = {'name': '', 'last_name': '', 'username': '', 'password': ''}
 
 
 def window():
-  global root  # create tkinter window with labels and buttons
-  root = Tk()
-  root.geometry("600x400")
-  root.title("Window")
-  root.configure(bg="#ffffff")
-  label2 = Label(root, text="Login or create an account.")
+  global win  # create tkinter window with labels and buttons
+  win = Tk()
+  win.geometry("600x400")
+  win.title("Window")
+  win.configure(bg="#ffffff")
+  label2 = Label(win, text="Login or create an account.")
   label2.pack()
-  add_button = Button(root, text='Create an Account', command=create)
+  add_button = Button(win, text='Create an Account', command=(create))
   add_button.pack()
-  login_button = Button(root, text='Login', command=login)
+  login_button = Button(win, text='Login', command=(login))
   login_button.pack()
-  button = Button(root, text='Save and Exit', command=root.destroy)
+  button = Button(win, text='Save and Exit', command=win.destroy)
   button.pack()
-  root.mainloop()
+  win.mainloop()
 
 
 def create():
+  win.destroy()
   global root  # make the create account window with labels and entry fields
   root = Tk()
   root.geometry("600x400")
@@ -85,6 +86,7 @@ def create():
 
 
 def login():  # make login window with entry fields and buttons
+  win.destroy()
   global root
   root = Tk()
   root.geometry("600x400")
@@ -233,43 +235,44 @@ def loggedin(username, password, key,
   camera_label = tk.Label(top_left_frame, text="CAMERA")
   camera_label.pack()
 
-  log_label = tk.Label(top_right_frame,
+  log_label = tk.Label(bottom_right_frame,
                        text=f"Welcome {name}",
                        fg="white",
                        bg="black",
                        anchor="nw")
   log_label.pack(fill="both", expand=True)
 
-  button_frame = tk.Frame(top_right_frame, bg="black")
+  button_frame = tk.Frame(bottom_right_frame, bg="black")
   button_frame.pack(side="bottom", fill="both", expand=True)
 
   forward_button = tk.Button(
-      bottom_right_frame,
+      top_right_frame,
       text="   ^   \nForward",
       # We use lamdba for the following, to send for eg. 'forward' back to the previous function send_command, we wouldnt be able to just do command = send_command('forward'), we need lambda.
       command=lambda: [send_command('forward'),
                        forward()])
   backward_button = tk.Button(
-      bottom_right_frame,
+      top_right_frame,
       text="Backward\n   v   ",
       command=lambda: [send_command('backward'),
                        backward()])
   left_button = tk.Button(
-      bottom_right_frame,
+      top_right_frame,
       text="<   Left",
       command=lambda: [send_command('left'), left()])
   right_button = tk.Button(
-      bottom_right_frame,
+      top_right_frame,
       text="Right   >",
       command=lambda: [send_command('right'), right()
                        ])  # place move buttons, and call their functions
   stop_button = tk.Button(
-      bottom_right_frame,
+      top_right_frame,
       text="   Stop   ",
       command=lambda: [send_command('stop'), stop()])
-  logout_button = tk.Button(bottom_right_frame,
+  logout_button = tk.Button(top_right_frame,
                             text="   Logout   ",
                             command=lambda: [send_command('stop'), logout()])
+
 
   forward_button.grid(row=0, column=1)
   backward_button.grid(row=2, column=1)
@@ -286,7 +289,7 @@ def loggedin(username, password, key,
   root.grid_columnconfigure(1, weight=1)
 
   # Make the log area fill the available space
-  top_right_frame.pack_propagate(
+  bottom_right_frame.pack_propagate(
       False
   )  # i googled this because the log frame was smaller than the camera frame?
   log_label.pack(fill="both", expand=True)
