@@ -29,7 +29,7 @@ def send_command(direction):
     else:
         print(f"Failed to send command '{direction}'")
 
-# Function to update camera feed, produces error: ChunkedEncodingError: ("Connection broken: InvalidChunkLength(got length b'', 0 bytes read)", InvalidChunkLength(got length b'', 0 bytes read))
+#Function to update camera feed, produces error: Error updating camera feed: ("Connection broken: InvalidChunkLength(got length b'', 0 bytes read)", InvalidChunkLength(got length b'', 0 bytes read))
 def update_camera_feed():
     try:
         response = requests.get('http://192.168.1.30:4200/camera', stream=True)
@@ -170,13 +170,13 @@ def loggedin(username, password, key, name):
     global log_text, camera_feed_label, root
 
     root = tk.Tk()
-    root.geometry("800x600")
+    root.geometry("600x600")
     root.title("Logged In")
 
-    top_left_frame = tk.Frame(root, bg="white", width=400, height=300)
-    top_right_frame = tk.Frame(root, bg="black", width=400, height=300)
-    bottom_left_frame = tk.Frame(root, width=400, height=300, bg='pink')
-    bottom_right_frame = tk.Frame(root, width=400, height=300)
+    top_left_frame = tk.Frame(root, bg="white", width=300, height=300)
+    top_right_frame = tk.Frame(root, bg="black", width=300, height=300)
+    bottom_left_frame = tk.Frame(root, width=300, height=300, bg='pink')
+    bottom_right_frame = tk.Frame(root, width=300, height=300)
 
     top_left_frame.grid(row=0, column=0, sticky="nsew")
     camera_feed_label = tk.Label(top_left_frame)
